@@ -1,0 +1,7 @@
+#ifndef COMMONHEADER_H
+#define COMMONHEADER_H
+
+#define PATH_LENGTH_MAX 4096
+#define INPUT_LENGTH_MAX 4096
+
+#endif
