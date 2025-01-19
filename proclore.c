@@ -3,11 +3,13 @@
 void proclore(int id){
     printf("PID : %d\n", id);
 
+    // /proc/pid/status contains the info of any process
+
     char path[PATH_LENGTH_MAX] = {0};
     sprintf(path, "/proc/%d/status", id);
     FILE* fp = fopen(path, "r");
     if(fp == NULL){
-        printColor("ERROR : Process does not exits", RED);
+        printColor("ERROR : Process does not exist", RED);
         return;
     }
     char tempStr[INPUT_LENGTH_MAX] = {0};
@@ -18,10 +20,13 @@ void proclore(int id){
         }
     }
     int processGroupID = getpgid(id);
-    if(processGroupID == id){
+    int fgID = tcgetpgrp(STDIN_FILENO);
+    if(processGroupID == id && fgID == processGroupID){
+        //foreground process
         printf("+\n");
     }
     else{
+        //background process
         printf("\n");
     }
 
@@ -40,7 +45,7 @@ void proclore(int id){
 
     fclose(fp);
 
-    sprintf(path, "/proc/%d/exe", id);
+    sprintf(path, "/proc/%d/exe", id); // to read the exe path name
     fp = fopen(path, "r");
     if(fp == NULL){
         printColor("ERROR : Error while reading exe path.", RED);

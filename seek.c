@@ -111,6 +111,7 @@ int seek(char** args, int argsNum, char* rootDir, char* prevDir){
 
     char* paths[] = {targetDir, NULL};
     FTS* fts = fts_open(paths, FTS_PHYSICAL | FTS_NOCHDIR, NULL);
+    // iterates over the file tree
 
     if(fts == NULL){
         printColor("ERROR : Failed to open file stream.", RED);
@@ -123,6 +124,7 @@ int seek(char** args, int argsNum, char* rootDir, char* prevDir){
     char specialCaseType;
     while((node = fts_read(fts)) != NULL){
         if(node->fts_info & FTS_D){
+            // directory
             if(filesOnly == 0){
                 if(strcmp(node->fts_name, targetName) == 0){
                     outputPath(node->fts_path, 2);
@@ -135,6 +137,7 @@ int seek(char** args, int argsNum, char* rootDir, char* prevDir){
             }
         }
         else if(node->fts_info & FTS_F){
+            // file
             if(directoriesOnly == 0){
                 char* ptr;
                 char* name = strtok_r(node->fts_name, ".", &ptr);
@@ -152,6 +155,8 @@ int seek(char** args, int argsNum, char* rootDir, char* prevDir){
 
     if(count == 1 && specialHandle == 1){
         if(specialCaseType == 'd'){
+            getcwd(prevDir, PATH_LENGTH_MAX);
+
             int rc = chdir(specialCase);
 
             if(rc == -1){

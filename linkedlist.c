@@ -1,11 +1,13 @@
 #include "./linkedlist.h"
 
-BgProcess* addBgProcess(BgProcess* head, int pid, char* command){
+BgProcess* addBgProcess(BgProcess* head, int pid, char* command, int isRunning, int bgInvocationNum){
     if(head == NULL){
         BgProcess* newBgProcess = (BgProcess*) malloc(sizeof(BgProcess));
         newBgProcess->pid = pid;
         newBgProcess->command = strdup(command);
         newBgProcess->next = NULL;
+        newBgProcess->isRunning = isRunning;
+        newBgProcess->bgInvocationNum = bgInvocationNum;
         return newBgProcess;
     }
 
@@ -16,6 +18,8 @@ BgProcess* addBgProcess(BgProcess* head, int pid, char* command){
     current->next = (BgProcess*) malloc(sizeof(BgProcess));
     current->next->pid = pid;
     current->next->command = strdup(command);
+    current->next->isRunning = isRunning;
+    current->next->bgInvocationNum = bgInvocationNum;
     current->next->next = NULL;
 
     return head;
@@ -26,7 +30,6 @@ BgProcess* removeBgProcess(BgProcess* head, int pid){
     BgProcess* prev = NULL;
     while(current != NULL){
         if(current->pid == pid){
-            printf("%s", current->command);
 
             if(prev == NULL){
                 if(current->next == NULL){
@@ -49,3 +52,13 @@ BgProcess* removeBgProcess(BgProcess* head, int pid){
     return head;
 }
 
+BgProcess* getProcess(BgProcess* head, int pid){
+    BgProcess* current = head;
+    while(current != NULL){
+        if(current->pid == pid){
+            return current;
+        }
+        current = current->next;
+    }
+    return NULL;
+}

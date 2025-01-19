@@ -28,10 +28,10 @@ int changeDir(char* inputPath){
 }
 
 int hop(char* inputPathN, char* rootDir, char* prevDir){
-    char inputPath[PATH_LENGTH_MAX] = {0};
+    char inputPath[PATH_LENGTH_MAX + 1] = {0};
     char* s = strstr(inputPathN, "hop");
     strcpy(inputPath, s + hopCommandLen);
-    inputPath[strlen(inputPathN) - 1 - hopCommandLen] = '\0';
+    inputPath[strlen(inputPath) - 1] = '\0';
 
     char* saveptr;
     char* token = strtok_r(inputPath, " ", &saveptr);
@@ -39,7 +39,8 @@ int hop(char* inputPathN, char* rootDir, char* prevDir){
     char currDir[PATH_LENGTH_MAX] = {0};
     getcwd(currDir, PATH_LENGTH_MAX);
 
-    if(token == NULL || strcmp(token, "") == 0 || strcmp(token, " ") == 0 || strcmp(token, "\t") == 0 || strcmp(token, "\n") == 0){
+    if((token == NULL || strcmp(token, "") == 0 || strcmp(token, " ") == 0 || strcmp(token, "\t") == 0 || strcmp(token, "\n") == 0 || strcmp(token, "<") == 0 || strcmp(token, ">") == 0 || strcmp(token, ">") == 0)){
+        // no path given so go to root directory
         strcpy(prevDir, currDir);
         int rc = changeDir(rootDir);
         if(rc == -1){
@@ -52,17 +53,23 @@ int hop(char* inputPathN, char* rootDir, char* prevDir){
     int firstTime = 0;
     
     while(token != NULL){
+        if(strcmp(token, "<") == 0 || strcmp(token, ">") == 0 || strcmp(token, ">") == 0 || strcmp(token, "|") == 0){  
+            break;
+        }
         if(strcmp(token, "~") == 0){
+            //root
             int rc = changeDir(rootDir);
             if(rc == -1){
                 if(firstTime != 0){
                     strcpy(prevDir, currDir);   
                 }
+
                 return -1;
             }
             printf("%s\n", rootDir);
         }
         else if(strcmp(token, "-") == 0){
+            // previous directory
             if(strlen(prevDir) == 0){
                 printColor("ERROR : No previous directory established yet.", RED);
                 if(firstTime != 0){
@@ -81,6 +88,7 @@ int hop(char* inputPathN, char* rootDir, char* prevDir){
         }
         else{
             if(token[0] == '~'){
+                //if root alias is in path
                 char temp[PATH_LENGTH_MAX] = {0};
                 strcpy(temp, rootDir);
                 strcat(temp, token + 1);
@@ -107,6 +115,7 @@ int hop(char* inputPathN, char* rootDir, char* prevDir){
             getcwd(temp, PATH_LENGTH_MAX);
             firstTime = 1;
             printf("%s\n", temp);
+        //stop if <, > , & is encountered
         }
 
         token = strtok_r(NULL, " ", &saveptr);

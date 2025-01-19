@@ -29,7 +29,8 @@ void prompt(char* originalDir, int timeTakenByLastCommand, char* lastCommand){
         printColor("ERROR : Failed to get hostname.", RED);
     }
 
-    printf(BLU);
+    // print prompt
+    printf(HCYN);
     printf("<%s@%s:", username, hostname);
     if(homeDirCheck){
         if(strcmp(currentDir, originalDir) == 0){
@@ -46,6 +47,7 @@ void prompt(char* originalDir, int timeTakenByLastCommand, char* lastCommand){
     }
 
     if(timeTakenByLastCommand > 2){
+        // print last command and time taken
         printf(" %s : %ds>", lastCommand, timeTakenByLastCommand);
     }
     else printf(">");

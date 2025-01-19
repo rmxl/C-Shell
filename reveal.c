@@ -16,18 +16,21 @@ int printInColor(char* path, struct dirent* dirent, int allInfoShow){
 
     if(allInfoShow == 0){
         if(S_ISDIR(fileStat.st_mode)){
-            printColor(dirent->d_name, BLU);
+            // Directory
+            printf("%s%s%s\n", BLU, dirent->d_name, RESET);
         }
         else if(S_ISREG(fileStat.st_mode)){
             if(S_IXUSR & fileStat.st_mode) {
-                printColor(dirent->d_name, GRN);
+                // Executable
+                printf("%s%s%s\n", GRN, dirent->d_name, RESET);
             } 
             else {
-                printColor(dirent->d_name, WHT);
+                // Regular file
+                printf("%s%s%s\n", WHT, dirent->d_name, RESET);
             }
         }
         else{
-            printColor(dirent->d_name, WHT);
+            printf("%s%s%s\n", WHT, dirent->d_name, RESET);
         }
     }
 
@@ -36,29 +39,36 @@ int printInColor(char* path, struct dirent* dirent, int allInfoShow){
         else if(S_ISDIR(fileStat.st_mode)) printf("d");
         else printf("-");
 
+        // User permissions
         printf("%c", (fileStat.st_mode & S_IRUSR) ? 'r' : '-');
         printf("%c", (fileStat.st_mode & S_IWUSR) ? 'w' : '-');
         printf("%c", (fileStat.st_mode & S_IXUSR) ? 'x' : '-');
 
+        // Group permissions
         printf("%c", (fileStat.st_mode & S_IRGRP) ? 'r' : '-');
         printf("%c", (fileStat.st_mode & S_IWGRP) ? 'w' : '-');
         printf("%c", (fileStat.st_mode & S_IXGRP) ? 'x' : '-');
 
+        // Other permissions
         printf("%c", (fileStat.st_mode & S_IROTH) ? 'r' : '-');
         printf("%c", (fileStat.st_mode & S_IWOTH) ? 'w' : '-');
         printf("%c", (fileStat.st_mode & S_IXOTH) ? 'x' : '-');
 
+        // Number of links
         printf(". ");
         printf("%ld ", fileStat.st_nlink);
 
+        // User and group names
         struct passwd* passwd = getpwuid(fileStat.st_uid);
         printf("%s ", passwd->pw_name);
 
         struct group* group = getgrgid(fileStat.st_gid);
         printf("%s ", group->gr_name);
 
+        // File size
         printf("%ld ", fileStat.st_size);
 
+        // Time of last modification
         struct tm* tm = localtime(&fileStat.st_mtime);
         if(tm == NULL){
             printColor("ERROR : Time conversion failed.", RED);
@@ -72,19 +82,20 @@ int printInColor(char* path, struct dirent* dirent, int allInfoShow){
         }
         printf("%s ", timestr);
 
+        // File name
         if(S_ISDIR(fileStat.st_mode)){
-            printColor(dirent->d_name, BLU);
+            printf("%s%s%s\n", BLU, dirent->d_name, RESET);
         }
         else if(S_ISREG(fileStat.st_mode)){
             if(S_IXUSR & fileStat.st_mode) {
-                printColor(dirent->d_name, GRN);
+                printf("%s%s%s\n", GRN, dirent->d_name, RESET);
             } 
             else {
-                printColor(dirent->d_name, WHT);
+                printf("%s%s%s\n", WHT, dirent->d_name, RESET);
             }
         }
         else{
-            printColor(dirent->d_name, WHT);
+            printf("%s%s%s\n", WHT, dirent->d_name, RESET);
         }
     }
     return 0;

@@ -49,12 +49,13 @@ void logCommand(char* command, int mode, int idx, char* rootDir, char* prevDir, 
     getlogin_r(user, INPUT_LENGTH_MAX);
     char historyFile[PATH_LENGTH_MAX];
     char tempFile[PATH_LENGTH_MAX];
-    sprintf(historyFile, "/home/%s/.local/.myShellHistory", user);
-    sprintf(tempFile, "/home/%s/.local/.myShellTemp", user);
+    sprintf(historyFile, "/home/%s/.myShellHistory", user);
+    sprintf(tempFile, "/home/%s/.myShellTemp", user);
 
     logCommands cm = mode;
 
-    if (cm == logStore) {
+    if (cm == logStore) {  
+        // a command was executed other than log
         FILE* file = fopen(historyFile, "r");
         if(file == NULL){
             file = fopen(historyFile, "w");
@@ -62,6 +63,7 @@ void logCommand(char* command, int mode, int idx, char* rootDir, char* prevDir, 
             file = fopen(historyFile, "r");
         }
         if (checkLength(file) == MAX_HISTORY) {
+            //if the history file has reached its maximum limit
             if(isLastCommandSame(file, command)){
                 fclose(file);
                 return;
@@ -93,6 +95,7 @@ void logCommand(char* command, int mode, int idx, char* rootDir, char* prevDir, 
             fclose(temp);
             
         } else {
+            // space is there
             rewind(file);
             if (!isLastCommandSame(file, command)) {
                 FILE* appendFile = fopen(historyFile, "a");
@@ -111,9 +114,10 @@ void logCommand(char* command, int mode, int idx, char* rootDir, char* prevDir, 
         }
     }
     else if(cm == logPrint){
+        /// log print
         FILE* file = fopen(historyFile, "r");
         if(file == NULL){
-            printf("ERROR : No history exists.\n");
+            printColor("ERROR : No history exists.", RED);
             return;
         }
         char c = fgetc(file);
@@ -124,10 +128,12 @@ void logCommand(char* command, int mode, int idx, char* rootDir, char* prevDir, 
         fclose(file);
     }
     else if(cm == logPurge){
+        // empty log file
         FILE* file = fopen(historyFile, "w");
         fclose(file);
     }
     else if (cm == logExecute){
+        // execute a command from history
         char command[PATH_LENGTH_MAX];
         FILE* file = fopen(historyFile, "r");
         if(file == NULL){
@@ -157,10 +163,9 @@ void logCommand(char* command, int mode, int idx, char* rootDir, char* prevDir, 
         }
         cmd[pos] = '\n';
         cmd[pos + 1] = '\0';  
-        // cmd[pos] = '\0';  
         fclose(file);
         strcpy(command, cmd);
-        executeCommand(command, rootDir, prevDir, commandName, timeTakenByLastCommand, BgProcesses, bgProcNum);
+        executeCommand(command, rootDir, prevDir, commandName, timeTakenByLastCommand, BgProcesses, bgProcNum);;
         return;
     }
 }
